@@ -55,7 +55,7 @@ class VideoConverter:
         output_dir.mkdir(exist_ok=True)
         return output_dir / f"{platform.lower()}_{timestamp}_whatsapp.mp4"
     
-    def process_url(self, url: str) -> Optional[Path]:
+    def process_url(self, url: str, compress: bool = True) -> Optional[Path]:
         """Main workflow to download and process a video from a given URL."""
         try:
             # Detect platform and get appropriate downloader
@@ -93,7 +93,8 @@ class VideoConverter:
                 output_file = self._generate_output_filename(platform)
                 processed_file = self.processor.process_for_whatsapp(
                     downloaded_file,
-                    output_file
+                    output_file,
+                    compress=compress
                 )
                 progress.update(process_task, completed=True)
                 
@@ -121,6 +122,11 @@ def main():
         action="store_true",
         help="Keep the original downloaded file"
     )
+    parser.add_argument(
+        "--no-compress",
+        action="store_true",
+        help="Disable automatic compression (may result in files too large for WhatsApp)"
+    )
     args = parser.parse_args()
     
     converter = VideoConverter()
@@ -130,7 +136,7 @@ def main():
         console.print("\n[bold cyan]🎥 The Joke Expediter[/bold cyan]")
         console.print("Converting video for WhatsApp...\n")
         
-        output_file = converter.process_url(args.url)
+        output_file = converter.process_url(args.url, compress=not args.no_compress)
         
         if output_file:
             console.print(

@@ -14,7 +14,7 @@ class InstagramDownloader(BaseDownloader):
             'no_warnings': True,
             'extract_flat': False,
             # Instagram often requires authentication
-            'cookiesfile': 'config/instagram_cookies.txt',  # You'll need to add this file
+            # Cookies will be loaded from keyring at runtime
             'headers': {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             }
@@ -22,8 +22,9 @@ class InstagramDownloader(BaseDownloader):
     
     def is_valid_url(self, url: str) -> bool:
         patterns = [
-            r'^https?:\/\/(?:www\.)?instagram\.com\/(?:p|reel|tv)\/[\w-]+',
+            r'^https?:\/\/(?:www\.)?instagram\.com\/(?:p|tv)\/[\w-]+',
             r'^https?:\/\/(?:www\.)?instagram\.com\/stories\/[\w\.]+\/\d+',
+            r'^https?:\/\/(?:www\.)?instagram\.com\/(?:[\w\.]+\/)?reel\/[\w-]+\/?'
         ]
         return any(re.match(pattern, url) for pattern in patterns)
     
@@ -52,8 +53,16 @@ class InstagramDownloader(BaseDownloader):
             output_file = output_path / f"instagram_{video_id}.mp4"
             self.ydl_opts['outtmpl'] = str(output_file)
             
-            if not Path('config/instagram_cookies.txt').exists():
-                self.logger.warning("Instagram cookies file not found. Authentication might be required.")
+            # Load cookies from keyring
+            from src.utils.cookie_manager import InstagramCookieManager
+            cookie_manager = InstagramCookieManager()
+            cookies = cookie_manager.get_cookies_from_keyring()
+            
+            if not cookies:
+                self.logger.error("No Instagram cookies found in keyring. Run python -m src.utils.cookie_manager to set them up.")
+                raise ValueError("Instagram authentication required")
+                
+            self.ydl_opts['cookies'] = cookies  # Pass cookies directly to yt-dlp
             
             self.logger.info(f"Downloading Instagram video: {video_id}")
             with YoutubeDL(self.ydl_opts) as ydl:
