@@ -8,3 +8,5 @@ tqdm>=4.62.0
 pytest>=6.2.5
 black>=21.7b0
 flake8>=3.9.0
+yt-dlp>=2023.3.4
+ffmpeg-python>=0.2.0
