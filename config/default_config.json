@@ -1,0 +1,11 @@
+{
+    "download_path": "downloads",
+    "output_path": "output",
+    "ffmpeg": {
+        "video_codec": "libx264",
+        "audio_codec": "aac",
+        "preset": "medium",
+        "crf": 23,
+        "audio_bitrate": "128k"
+    }
+}

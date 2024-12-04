@@ -1,0 +1,10 @@
+# Core dependencies
+requests>=2.26.0
+ffmpeg-python>=0.2.0
+python-dotenv>=0.19.0
+tqdm>=4.62.0
+
+# Development dependencies
+pytest>=6.2.5
+black>=21.7b0
+flake8>=3.9.0
