@@ -1,12 +1,23 @@
 # Core dependencies
-requests>=2.26.0
-ffmpeg-python>=0.2.0
-python-dotenv>=0.19.0
-tqdm>=4.62.0
+yt-dlp>=2023.3.4         # Video downloading backend
+ffmpeg-python>=0.2.0     # Video processing
+keyring>=24.0.0          # Secure credential storage
+rich>=10.0.0             # Terminal UI and progress bars
+
+# HTTP and networking
+requests>=2.31.0         # HTTP requests
+urllib3>=2.0.7          # HTTP client
+
+# Utility packages
+python-dotenv>=0.19.0    # Environment variable management
+pathlib>=1.0.1          # Path manipulation
+typing-extensions>=4.8.0  # Type hinting support
 
 # Development dependencies
-pytest>=6.2.5
-black>=21.7b0
-flake8>=3.9.0
-yt-dlp>=2023.3.4
-ffmpeg-python>=0.2.0
+pytest>=7.4.3           # Testing framework
+black>=23.11.0          # Code formatting
+flake8>=6.1.0           # Code linting
+mypy>=1.7.1             # Static type checking
+
+# Optional but recommended
+pytest-cov>=4.1.0       # Test coverage reporting
