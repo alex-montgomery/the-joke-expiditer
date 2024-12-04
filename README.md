@@ -133,18 +133,105 @@ For example:
 output/youtube_20240304_144500_whatsapp.mp4
 ```
 
-## Project Structure
+# Project Structure
+
+The repository is organized to separate core functionality, configuration, and temporary storage. Here's a detailed breakdown of the directory structure:
 
 ```
 the-joke-expediter/
-├── src/
-│   ├── downloaders/        # Platform-specific video downloaders
-│   ├── processors/         # Video processing utilities
-│   └── utils/             # Helper functions
-├── downloads/             # Temporary storage for downloads
-├── output/               # Processed videos
-└── logs/                # Application logs
+├── src/                   # Main source code directory
+│   ├── downloaders/       # Platform-specific video downloaders
+│   ├── processors/        # Video processing and conversion utilities
+│   └── utils/            # Helper functions and utilities
+├── config/               # Configuration files and settings
+├── downloads/            # Temporary storage for downloaded videos
+├── logs/                # Application logs
+├── output/              # Processed videos ready for WhatsApp
+└── tests/               # Test directory
+    ├── integration/     # Integration tests
+    └── unit/           # Unit tests
 ```
+
+Let me explain the purpose of each directory:
+
+The `src` directory contains all the main application code:
+- `downloaders`: Contains specialized modules for each platform (YouTube, TikTok, Instagram)
+- `processors`: Houses video processing logic, including FFmpeg integration
+- `utils`: Includes helper functions like cookie management and authentication
+
+The support directories serve specific purposes:
+- `config`: Stores configuration files and any necessary credentials
+- `downloads`: Temporary storage for videos during processing (automatically cleaned)
+- `output`: Final destination for WhatsApp-ready videos
+- `logs`: Contains application logs for troubleshooting
+
+During operation, the application will:
+1. Download videos to the `downloads` directory
+2. Process them using the video processor
+3. Save the final WhatsApp-compatible videos to the `output` directory
+4. Maintain logs in the `logs` directory for debugging
+
+The application automatically creates these directories as needed, so you don't need to set them up manually. All temporary files in the `downloads` directory are cleaned up after processing unless you specifically request to keep them using the `--keep-original` flag.
+
+# Video Processing Features
+
+The Joke Expediter intelligently processes videos to ensure WhatsApp compatibility while maintaining the best possible quality. Here's what it does:
+
+## Automatic Size Optimization
+- Automatically detects if a video needs compression for WhatsApp (16MB limit)
+- Preserves original quality when possible
+- Uses smart compression only when necessary
+- Maintains aspect ratio during any resizing
+
+## Platform Support
+- YouTube videos and shorts
+- TikTok videos
+- Instagram posts, reels, and stories
+
+## Video Processing Capabilities
+- Converts videos to WhatsApp-compatible formats
+- Optimizes video codec (H.264) and audio codec (AAC)
+- Maintains quality for videos already under size limits
+- Progressive compression when size reduction is needed:
+  1. High quality (720p)
+  2. Medium quality (480p)
+  3. Low quality (360p)
+  4. Minimum quality (270p) as last resort
+
+## Command Line Options
+```bash
+# Basic usage
+python -m src.main "VIDEO_URL"
+
+# Disable compression (only use if you're sure about file size)
+python -m src.main --no-compress "VIDEO_URL"
+
+# Keep original downloaded file
+python -m src.main --keep-original "VIDEO_URL"
+```
+
+## System Requirements
+- Python 3.8 or higher
+- FFmpeg (version 4.0 or higher recommended)
+- At least 2GB of free disk space for processing
+- Active internet connection for video downloads
+
+## Performance Notes
+- Processing time depends on video length and original quality
+- Temporary files are automatically cleaned up
+- Progress bars show download and processing status
+- Detailed logging available for troubleshooting
+
+## Supported Video Formats
+Input formats: MP4, WebM, MKV, MOV (and others supported by FFmpeg)
+Output format: MP4 (optimized for WhatsApp)
+
+## WhatsApp Compatibility
+All processed videos are optimized to meet WhatsApp's requirements:
+- Maximum file size: 16MB
+- Compatible codec: H.264 video, AAC audio
+- Supported resolutions: up to 1280x720
+- Duration: Unlimited (as long as final size is under 16MB)
 
 ## Troubleshooting
 
@@ -157,10 +244,3 @@ ffmpeg -version
 
 3. **File size issues**: WhatsApp has a 16MB limit for videos. The tool automatically optimizes videos to fit within this limit, but extremely long or high-quality videos might result in reduced quality to meet the size requirement.
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
